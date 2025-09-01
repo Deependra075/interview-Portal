@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - InterviewPro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <h2>InterviewPro</h2>
+                <p>Admin Dashboard</p>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#dashboard" class="nav-link active" data-section="dashboard">
+                            <span class="nav-icon">DASH</span>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#questions" class="nav-link" data-section="questions">
+                            <span class="nav-icon">QUES</span>
+                            <span class="nav-text">Questions</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#candidates" class="nav-link" data-section="candidates">
+                            <span class="nav-icon">CAND</span>
+                            <span class="nav-text">Candidates</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#campaigns" class="nav-link" data-section="campaigns">
+                            <span class="nav-icon">CAMP</span>
+                            <span class="nav-text">Campaigns</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#attempts" class="nav-link" data-section="attempts">
+                            <span class="nav-icon">TEST</span>
+                            <span class="nav-text">Test Results</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#settings" class="nav-link" data-section="settings">
+                            <span class="nav-icon">SET</span>
+                            <span class="nav-text">Settings</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            
+            <div class="sidebar-footer">
+                <button id="logoutBtn" class="btn btn-outline w-full">
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard-section" class="section active">
+                <div class="header-with-profile">
+                    <div class="header-content">
+                        <h1 class="page-title">Dashboard</h1>
+                        <p class="page-subtitle">Overview of your interview platform</p>
+                    </div>
+                    <div class="profile-section">
+                        <div class="profile-avatar" id="profileAvatar">A</div>
+                        <div class="profile-name" id="profileName">Admin User</div>
+                        <div class="profile-email" id="profileEmail">admin@example.com</div>
+                        <div class="profile-status">Online</div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon primary">
+                            <span>Q</span>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="totalQuestions">0</div>
+                            <div class="stat-label">Total Questions</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon secondary">
+                            <span>C</span>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="totalCandidates">0</div>
+                            <div class="stat-label">Total Candidates</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon success">
+                            <span>T</span>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="completedAttempts">0</div>
+                            <div class="stat-label">Completed Tests</div>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon accent">
+                            <span>%</span>
+                        </div>
+                        <div class="stat-content">
+                            <div class="stat-value" id="averageScore">0%</div>
+                            <div class="stat-label">Average Score</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-charts">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Test Attempts - Last 7 Days</h3>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="attemptsChart" width="400" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Questions Section -->
+            <section id="questions-section" class="section hidden">
+                <div class="page-header">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="page-title">Questions</h1>
+                            <p class="page-subtitle">Manage your interview questions</p>
+                        </div>
+                        <button id="addQuestionBtn" class="btn btn-primary">
+                            Add Question
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Type</th>
+                                    <th>Difficulty</th>
+                                    <th>Points</th>
+                                    <th>Category</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="questionsTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center">Loading questions...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Candidates Section -->
+            <section id="candidates-section" class="section hidden">
+                <div class="page-header">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="page-title">Candidates</h1>
+                            <p class="page-subtitle">Manage candidate information and send test invitations</p>
+                        </div>
+                        <div class="flex gap-4">
+                            <button id="bulkInviteBtn" class="btn btn-secondary" disabled>
+                                Send Bulk Invites
+                            </button>
+                            <button id="addCandidateBtn" class="btn btn-primary">
+                                Add Candidate
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <input type="checkbox" id="selectAllCandidates" class="form-checkbox">
+                                    </th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Status</th>
+                                    <th>Tests Taken</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="candidatesTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center">Loading candidates...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Campaigns Section -->
+            <section id="campaigns-section" class="section hidden">
+                <div class="page-header">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="page-title">Campaigns</h1>
+                            <p class="page-subtitle">Manage interview campaigns and assign questions</p>
+                        </div>
+                        <button id="addCampaignBtn" class="btn btn-primary">
+                            Create Campaign
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Duration</th>
+                                    <th>Questions</th>
+                                    <th>Invites Sent</th>
+                                    <th>Created</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="campaignsTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center">Loading campaigns...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Attempts Section -->
+            <section id="attempts-section" class="section hidden">
+                <div class="page-header">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h1 class="page-title">Test Results</h1>
+                            <p class="page-subtitle">View all test attempts and detailed results</p>
+                        </div>
+                        <button id="exportAttemptsBtn" class="btn btn-secondary">
+                            Export CSV
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card mb-6">
+                    <div class="filters-row">
+                        <select id="campaignFilter" class="form-select">
+                            <option value="">All Campaigns</option>
+                        </select>
+                        <select id="statusFilter" class="form-select">
+                            <option value="">All Status</option>
+                            <option value="completed">Completed</option>
+                            <option value="in-progress">In Progress</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="table-container">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Candidate</th>
+                                    <th>Campaign</th>
+                                    <th>Started</th>
+                                    <th>Completed</th>
+                                    <th>Score</th>
+                                    <th>Tab Switches</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attemptsTableBody">
+                                <tr>
+                                    <td colspan="7" class="text-center">Loading attempts...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings-section" class="section hidden">
+                <div class="page-header">
+                    <h1 class="page-title">Settings</h1>
+                    <p class="page-subtitle">Configure email and company settings</p>
+                </div>
+
+                <div class="card">
+                    <form id="settingsForm">
+                        <div class="form-group">
+                            <label for="companyName" class="form-label">Company Name</label>
+                            <input type="text" id="companyName" class="form-input" placeholder="Your Company Name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="companyEmail" class="form-label">Company Email</label>
+                            <input type="email" id="companyEmail" class="form-input" placeholder="noreply@yourcompany.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="resendApiKey" class="form-label">Resend API Key (for email sending)</label>
+                            <input type="password" id="resendApiKey" class="form-input" placeholder="re_xxxxxxxxxx">
+                            <p class="form-help">Get your API key from <a href="https://resend.com" target="_blank">resend.com</a></p>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary">Save Settings</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Question Modal -->
+    <div id="questionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="questionModalTitle">Add Question</h2>
+                <button class="modal-close" id="closeQuestionModal">&times;</button>
+            </div>
+            
+            <form id="questionForm" class="modal-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="questionType" class="form-label">Type</label>
+                        <select id="questionType" class="form-select" required>
+                            <option value="MCQ">Multiple Choice</option>
+                            <option value="CODING">Coding</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="questionDifficulty" class="form-label">Difficulty</label>
+                        <select id="questionDifficulty" class="form-select">
+                            <option value="EASY">Easy</option>
+                            <option value="MEDIUM">Medium</option>
+                            <option value="HARD">Hard</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="questionCategory" class="form-label">Category</label>
+                        <input type="text" id="questionCategory" class="form-input" placeholder="e.g., JavaScript, Algorithms" value="general">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="questionPoints" class="form-label">Points</label>
+                        <input type="number" id="questionPoints" class="form-input" value="10" min="1" max="100">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="questionTitle" class="form-label">Title</label>
+                    <input type="text" id="questionTitle" class="form-input" required placeholder="Enter question title">
+                </div>
+                
+                <div class="form-group">
+                    <label for="questionBody" class="form-label">Question</label>
+                    <textarea id="questionBody" class="form-textarea" required placeholder="Enter the question description"></textarea>
+                </div>
+                
+                <div id="mcqOptions" class="form-group">
+                    <label class="form-label">Options (for MCQ)</label>
+                    <div class="options-container">
+                        <input type="text" class="form-input mb-2" placeholder="Option 1" data-option="0">
+                        <input type="text" class="form-input mb-2" placeholder="Option 2" data-option="1">
+                        <input type="text" class="form-input mb-2" placeholder="Option 3" data-option="2">
+                        <input type="text" class="form-input mb-2" placeholder="Option 4" data-option="3">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="questionAnswer" class="form-label">Correct Answer</label>
+                    <input type="text" id="questionAnswer" class="form-input" required placeholder="Enter the correct answer">
+                </div>
+                
+                <div id="codingFields" class="hidden">
+                    <div class="form-group">
+                        <label for="starterCode" class="form-label">Starter Code (Optional)</label>
+                        <textarea id="starterCode" class="form-textarea code-textarea" placeholder="function solution() {&#10;  // Your code here&#10;}"></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="supportedLanguages" class="form-label">Supported Languages</label>
+                        <div class="checkbox-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="javascript" checked> JavaScript
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="python"> Python
+                            </label>
+                            <label class="checkbox-label">
+                                <input type="checkbox" value="cpp"> C++
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" id="cancelQuestionBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Question</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Candidate Modal -->
+    <div id="candidateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Candidate</h2>
+                <button class="modal-close" id="closeCandidateModal">&times;</button>
+            </div>
+            
+            <form id="candidateForm" class="modal-form">
+                <div class="form-group">
+                    <label for="candidateName" class="form-label">Full Name</label>
+                    <input type="text" id="candidateName" class="form-input" required placeholder="Enter candidate name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="candidateEmail" class="form-label">Email Address</label>
+                    <input type="email" id="candidateEmail" class="form-input" required placeholder="candidate@example.com">
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" id="cancelCandidateBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Candidate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Campaign Modal -->
+    <div id="campaignModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 class="modal-title">Create Campaign</h2>
+                <button class="modal-close" id="closeCampaignModal">&times;</button>
+            </div>
+            
+            <form id="campaignForm" class="modal-form">
+                <div class="form-group">
+                    <label for="campaignName" class="form-label">Campaign Name</label>
+                    <input type="text" id="campaignName" class="form-input" required placeholder="e.g., Frontend Developer Assessment">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="campaignType" class="form-label">Type</label>
+                        <select id="campaignType" class="form-select" required>
+                            <option value="APTITUDE">Aptitude Test (MCQ Only)</option>
+                            <option value="CODING">Coding Test (Programming Only)</option>
+                            <option value="MIXED">Mixed Test (MCQ + Coding)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="campaignDuration" class="form-label">Duration (minutes)</label>
+                        <input type="number" id="campaignDuration" class="form-input" value="60" min="15" max="300" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Select Questions for Campaign</label>
+                    <div class="question-selection">
+                        <div class="question-filters">
+                            <select id="questionTypeFilter" class="form-select">
+                                <option value="">All Types</option>
+                                <option value="MCQ">MCQ</option>
+                                <option value="CODING">Coding</option>
+                            </select>
+                            <select id="questionDifficultyFilter" class="form-select">
+                                <option value="">All Difficulties</option>
+                                <option value="EASY">Easy</option>
+                                <option value="MEDIUM">Medium</option>
+                                <option value="HARD">Hard</option>
+                            </select>
+                        </div>
+                        <div class="questions-list" id="campaignQuestionsList">
+                            <!-- Questions will be populated here -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" id="cancelCampaignBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Campaign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Invite Modal -->
+    <div id="inviteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Send Test Invitation</h2>
+                <button class="modal-close" id="closeInviteModal">&times;</button>
+            </div>
+            
+            <form id="inviteForm" class="modal-form">
+                <div class="form-group">
+                    <label for="inviteCandidate" class="form-label">Select Candidate</label>
+                    <select id="inviteCandidate" class="form-select" required>
+                        <option value="">Choose a candidate</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="inviteCampaign" class="form-label">Select Campaign</label>
+                    <select id="inviteCampaign" class="form-select" required>
+                        <option value="">Choose a campaign</option>
+                    </select>
+                </div>
+
+                <div class="email-template-section">
+                    <h4>Email Template</h4>
+                    <div class="form-group">
+                        <label for="emailSubject" class="form-label">Email Subject</label>
+                        <input type="text" id="emailSubject" class="form-input" 
+                               value="Interview Invitation - {{campaignName}} | {{companyName}}" 
+                               placeholder="Email subject line">
+                    </div>
+                    <div class="form-group">
+                        <label for="emailMessage" class="form-label">Custom Message (Optional)</label>
+                        <textarea id="emailMessage" class="form-textarea" rows="3" 
+                                  placeholder="Add a personal message to the candidate..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="companyNameInput" class="form-label">Company Name</label>
+                    <input type="text" id="companyNameInput" class="form-input" placeholder="Your Company Name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="companyEmailInput" class="form-label">From Email</label>
+                    <input type="email" id="companyEmailInput" class="form-input" placeholder="hr@yourcompany.com" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="sendEmailNow" checked> Send email invitation immediately
+                    </label>
+                </div>
+                
+                <div id="inviteLink" class="form-group hidden">
+                    <label class="form-label">Generated Test Link</label>
+                    <div class="input-group">
+                        <input type="text" id="generatedLink" class="form-input" readonly>
+                        <button type="button" id="copyLinkBtn" class="btn btn-outline">Copy</button>
+                    </div>
+                    <p class="form-help">Share this link with the candidate to start their test.</p>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" id="cancelInviteBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="generateInviteBtn">Generate & Send Invite</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bulk Invite Modal -->
+    <div id="bulkInviteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Send Bulk Invitations</h2>
+                <button class="modal-close" id="closeBulkInviteModal">&times;</button>
+            </div>
+            
+            <form id="bulkInviteForm" class="modal-form">
+                <div class="form-group">
+                    <label for="bulkCampaign" class="form-label">Select Campaign</label>
+                    <select id="bulkCampaign" class="form-select" required>
+                        <option value="">Choose a campaign</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="bulkCompanyName" class="form-label">Company Name</label>
+                    <input type="text" id="bulkCompanyName" class="form-input" placeholder="Your Company Name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="bulkCompanyEmail" class="form-label">From Email</label>
+                    <input type="email" id="bulkCompanyEmail" class="form-input" placeholder="hr@yourcompany.com" required>
+                </div>
+
+                <div class="email-template-section">
+                    <h4>Email Template</h4>
+                    <div class="form-group">
+                        <label for="bulkEmailSubject" class="form-label">Email Subject</label>
+                        <input type="text" id="bulkEmailSubject" class="form-input" 
+                               value="Interview Invitation - {{campaignName}} | {{companyName}}" 
+                               placeholder="Email subject line">
+                    </div>
+                    <div class="form-group">
+                        <label for="bulkEmailMessage" class="form-label">Custom Message (Optional)</label>
+                        <textarea id="bulkEmailMessage" class="form-textarea" rows="3" 
+                                  placeholder="Add a personal message to the candidates..."></textarea>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Selected Candidates (<span id="selectedCount">0</span>)</label>
+                    <div id="selectedCandidatesList" class="selected-list">
+                        No candidates selected. Please select candidates from the table above.
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="sendBulkEmailNow" checked> Send email invitations immediately
+                    </label>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" id="cancelBulkInviteBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="sendBulkInviteBtn">Send Bulk Invites</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Campaign Questions Modal -->
+    <div id="campaignQuestionsModal" class="modal">
+        <div class="modal-content large">
+            <div class="modal-header">
+                <h2 class="modal-title">Manage Campaign Questions</h2>
+                <button class="modal-close" id="closeCampaignQuestionsModal">&times;</button>
+            </div>
+            
+            <div class="modal-form">
+                <div class="campaign-questions-content">
+                    <div class="questions-panel">
+                        <h3>Available Questions</h3>
+                        <div class="question-filters mb-4">
+                            <select id="availableTypeFilter" class="form-select">
+                                <option value="">All Types</option>
+                                <option value="MCQ">MCQ</option>
+                                <option value="CODING">Coding</option>
+                            </select>
+                        </div>
+                        <div id="availableQuestionsList" class="questions-list">
+                            <!-- Available questions -->
+                        </div>
+                    </div>
+                    
+                    <div class="questions-panel">
+                        <h3>Selected Questions (<span id="selectedQuestionsCount">0</span>)</h3>
+                        <div id="selectedQuestionsList" class="questions-list">
+                            <!-- Selected questions -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" id="cancelCampaignQuestionsBtn">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveCampaignQuestionsBtn">Save Questions</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Campaign Modal -->
+    <div id="editCampaignModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Edit Campaign</h2>
+                <button class="modal-close" id="closeEditCampaignModal">&times;</button>
+            </div>
+            
+            <form id="editCampaignForm" class="modal-form">
+                <div class="form-group">
+                    <label for="editCampaignName" class="form-label">Campaign Name</label>
+                    <input type="text" id="editCampaignName" class="form-input" required placeholder="e.g., Frontend Developer Assessment">
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="editCampaignType" class="form-label">Type</label>
+                        <select id="editCampaignType" class="form-select" required>
+                            <option value="APTITUDE">Aptitude Test (MCQ Only)</option>
+                            <option value="CODING">Coding Test (Programming Only)</option>
+                            <option value="MIXED">Mixed Test (MCQ + Coding)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editCampaignDuration" class="form-label">Duration (minutes)</label>
+                        <input type="number" id="editCampaignDuration" class="form-input" min="15" max="300" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="editAutoSendEmails"> Auto-send emails when creating invites
+                    </label>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-outline" id="cancelEditCampaignBtn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Update Campaign</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="js/admin.js"></script>
+</body>
+</html>

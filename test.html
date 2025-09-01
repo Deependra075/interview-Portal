@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Test - InterviewPro</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+</head>
+<body class="no-select">
+    <!-- Anti-cheat Warning -->
+    <div id="antiCheatWarning" class="anti-cheat-warning hidden">
+        <div class="warning-content">
+            <h2>Warning: Tab Switch Detected</h2>
+            <p>Switching tabs or leaving the test window is not allowed during the test.</p>
+            <p class="warning-count">Total tab switches: <span id="tabSwitchCount">0</span></p>
+            <button id="continueTestBtn" class="btn btn-primary btn-lg">Continue Test</button>
+        </div>
+    </div>
+
+    <!-- Test Container -->
+    <div class="test-container">
+        <!-- Pre-test Screen -->
+        <div id="preTestScreen" class="container">
+            <div class="test-welcome-card">
+                <h1 class="welcome-title">Welcome to Your Interview Test</h1>
+                
+                <div id="testInfo" class="test-info">
+                    <p class="loading-text">Loading test information...</p>
+                </div>
+                
+                <div id="instructions" class="test-instructions">
+                    <h3>Important Instructions:</h3>
+                    <ul class="instructions-list">
+                        <li>Do not switch tabs or leave the test window</li>
+                        <li>Do not copy/paste or use external resources</li>
+                        <li>Complete all questions within the time limit</li>
+                        <li>Your test will be auto-submitted when time expires</li>
+                        <li>Make sure you have a stable internet connection</li>
+                    </ul>
+                </div>
+                
+                <button id="startTestBtn" class="btn btn-primary btn-lg" disabled>
+                    Start Test
+                </button>
+            </div>
+        </div>
+
+        <!-- Test Interface -->
+        <div id="testInterface" class="hidden">
+            <!-- Test Header -->
+            <div class="test-header">
+                <div class="test-progress">
+                    Question <span id="currentQuestion">1</span> of <span id="totalQuestions">0</span>
+                </div>
+                <div class="test-timer">
+                    Time Remaining: <span id="timeRemaining">00:00</span>
+                </div>
+            </div>
+
+            <!-- Test Content -->
+            <div class="test-content">
+                <div class="question-header">
+                    <h2 class="question-title" id="questionTitle">Question Title</h2>
+                    <div class="question-meta">
+                        <span class="badge badge-primary" id="questionType">MCQ</span>
+                        <span class="badge badge-secondary" id="questionDifficulty">EASY</span>
+                        <span class="question-points">Points: <span id="questionPoints">10</span></span>
+                    </div>
+                </div>
+                
+                <div class="question-body" id="questionBody">
+                    Question content will appear here
+                </div>
+                
+                <!-- MCQ Options -->
+                <div id="mcqSection" class="question-section">
+                    <div class="options-container">
+                        <ul class="options-list" id="optionsList">
+                            <!-- Options will be populated here -->
+                        </ul>
+                    </div>
+                </div>
+                
+                <!-- Coding Section -->
+                <div id="codingSection" class="question-section hidden">
+                    <div class="coding-controls">
+                        <div class="form-group">
+                            <label for="languageSelect" class="form-label">Programming Language</label>
+                            <select id="languageSelect" class="form-select">
+                                <option value="javascript">JavaScript</option>
+                                <option value="python">Python</option>
+                                <option value="cpp">C++</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="codeEditor" class="form-label">Your Solution</label>
+                        <textarea id="codeEditor" class="code-editor" placeholder="Write your code here..."></textarea>
+                    </div>
+                    
+                    <div class="coding-actions">
+                        <button id="runCodeBtn" class="btn btn-outline">Run Code</button>
+                        <button id="saveCodeBtn" class="btn btn-secondary">Save Progress</button>
+                    </div>
+                    
+                    <div id="codeOutput" class="code-output hidden">
+                        <h4>Output:</h4>
+                        <pre id="outputContent"></pre>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Test Navigation -->
+            <div class="test-navigation">
+                <button id="prevBtn" class="btn btn-outline" disabled>
+                    Previous
+                </button>
+                
+                <div class="nav-actions">
+                    <button id="saveProgressBtn" class="btn btn-secondary">
+                        Save Progress
+                    </button>
+                    <button id="nextBtn" class="btn btn-primary">
+                        Next
+                    </button>
+                    <button id="submitTestBtn" class="btn btn-success hidden">
+                        Submit Test
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Completion Screen -->
+        <div id="completionScreen" class="container hidden">
+            <div class="completion-card">
+                <h1 class="completion-title">Test Completed Successfully!</h1>
+                <p class="completion-message">Thank you for taking the interview test. Your responses have been saved and will be reviewed by our team.</p>
+                
+                <div id="testResults" class="test-results">
+                    <div class="result-item">
+                        <div class="result-value" id="finalScore">-</div>
+                        <div class="result-label">Final Score</div>
+                    </div>
+                    <div class="result-item">
+                        <div class="result-value" id="timeTaken">-</div>
+                        <div class="result-label">Time Taken</div>
+                    </div>
+                </div>
+                
+                <p class="completion-footer">You may now close this window. We will contact you with the results soon.</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="js/test.js"></script>
+</body>
+</html>
